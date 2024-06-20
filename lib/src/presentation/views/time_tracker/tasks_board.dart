@@ -60,20 +60,9 @@ class TaskBoard extends StatelessWidget {
           return AppFlowyGroupHeader(
             icon: const Icon(Icons.lightbulb_circle),
             onAddButtonClick: () {
-              // context.read<TaskBloc>().add(ResetControllersEvent());
+              context.read<TaskBloc>().add(ResetControllersEvent());
               if (columnData.id == '1') {
                 _addNewTaskDialog(context, 1);
-                //         DataList(cat: '1',
-                //titile: 'Test', //textfield
-                // createdDate: DateTime.now().millisecondsSinceEpoch,
-                //description: 'description',//textfield
-                // images: [],
-                // comments: [],//textfield
-                // durationOfTask: DurationOfTask.fromMap({ "in_progress":123456,
-                // "completed":DateTime.now().millisecondsSinceEpoch+5000}),
-                // lastDate: DateTime.now().add(const Duration(days: 5)).millisecondsSinceEpoch,
-                // totalDays: 5 //dropdown)
-                // context.read<TaskBloc>().add(AddnewTaskEvent(addNewTask, 1));
               } else if (columnData.id == '2') {
                 _addNewTaskDialog(context, 2);
                 // context.read<TaskBloc>().add(AddnewTaskEvent(addNewTask, 2));
