@@ -5,25 +5,28 @@ import 'package:task_tracker/src/customr_resources/kanban_board.dart';
 enum TaskModelStatus { initial, loading, loaded, error }
 class TaskModel {
     final int totalcards;
-    final List<DataList> dataList;  
+    final List<DataList> dataList;
+    final List<DataList> dataList2;  
+    final List<DataList> dataList3;  
     final TaskModelStatus? taskModelStatus;  
     final String? title;
     final String? description;
     final String? comments;    
     final int? numOfDay;
-    final List<AppFlowyGroupData>? appFlowyGroupData;
+    
     TaskModel({
         required this.totalcards,
         required this.dataList,
+        required this.dataList2, 
+        required this.dataList3, 
         this.taskModelStatus,
         this.title,
         this.description,
         this.comments,
-        this.numOfDay,
-        this.appFlowyGroupData
+        this.numOfDay,        
     });
     TaskModel.initial()
-      : this(dataList: [],totalcards: 0,taskModelStatus: TaskModelStatus.initial,comments: '',description: '',numOfDay: 0,title: '',appFlowyGroupData: []);
+      : this(dataList: [],totalcards: 0,taskModelStatus: TaskModelStatus.initial,comments: '',description: '',numOfDay: 0,title: '',dataList2: [],dataList3: []);
     TaskModel copyWith({
         int? totalcards,
         TaskModelStatus? taskModelStatus,
@@ -33,6 +36,8 @@ class TaskModel {
         String? comments, 
         int? numOfDay,
         List<AppFlowyGroupData>? appFlowyGroupData,
+        List<DataList>? dataList2,
+        List<DataList>? dataList3, 
 
     }) => 
         TaskModel(
@@ -42,8 +47,9 @@ class TaskModel {
             title: title?? this.title,
             description: description??this.description,
             comments: comments??this.comments,
-            numOfDay: numOfDay??this.numOfDay,
-            appFlowyGroupData: appFlowyGroupData?? this.appFlowyGroupData
+            numOfDay: numOfDay??this.numOfDay,            
+            dataList2: dataList2??this.dataList2,
+            dataList3: dataList3??this.dataList3
         );
 
     factory TaskModel.fromJson(String str) => TaskModel.fromMap(json.decode(str));
@@ -53,13 +59,15 @@ class TaskModel {
     factory TaskModel.fromMap(Map<String, dynamic> json) => TaskModel(
         totalcards: json["totalcards"],
         dataList: List<DataList>.from(json["dataList"].map((x) => DataList.fromMap(x))),
-        appFlowyGroupData:json["appFlowyGroupData"].toList(),
+        dataList2: List<DataList>.from(json["dataList2"].map((x) => DataList.fromMap(x))),
+        dataList3: List<DataList>.from(json["dataList3"].map((x) => DataList.fromMap(x))),        
     );
 
     Map<String, dynamic> toMap() => {
         "totalcards": totalcards,
-        "dataList": List<dynamic>.from(dataList.map((x) => x.toMap())),
-        "appFlowyGroupData": appFlowyGroupData,
+        "dataList": List<dynamic>.from(dataList.map((x) => x.toMap())),        
+        "dataList2": List<dynamic>.from(dataList2.map((x) => x.toMap())),
+        "dataList3": List<dynamic>.from(dataList3.map((x) => x.toMap())),
     };
 }
 

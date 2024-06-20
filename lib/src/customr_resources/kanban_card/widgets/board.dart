@@ -66,6 +66,10 @@ class AppFlowyBoard extends StatelessWidget {
     this.boardScrollController,
     this.leading,
     this.trailing,
+    required this.onMoveGroupItem,
+    required this.onMoveGroupItemToGroup,
+
+
   });
 
   /// A controller for [AppFlowyBoard] widget.
@@ -80,6 +84,8 @@ class AppFlowyBoard extends StatelessWidget {
   /// the [AppFlowyBoardController] for more information.
   ///
   final AppFlowyBoardController controller;
+  final OnMoveGroupItem  onMoveGroupItem;
+  final OnMoveGroupItemToGroup onMoveGroupItemToGroup;
 
   /// The widget that will be rendered as the background of the board.
   final Widget? background;
@@ -131,19 +137,18 @@ class AppFlowyBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: controller,
+      value: controller,      
+
       child: Consumer<AppFlowyBoardController>(
         builder: (context, notifier, child) {
           final boardState = AppFlowyBoardState();
           final phantomController = BoardPhantomController(
             delegate: controller,
             groupsState: boardState,
-          );
-
+          );          
           if (boardScrollController != null) {
             boardScrollController!._boardState = boardState;
-          }
-
+          }          
           return _AppFlowyBoardContent(
             config: config,
             dataController: controller,
@@ -159,7 +164,9 @@ class AppFlowyBoard extends StatelessWidget {
             phantomController: phantomController,
             onReorder: controller.moveGroup,
             leading: leading,
-            trailing: trailing,
+            trailing: trailing, 
+            onMoveGroupItem:  controller.moveGroupItem,
+            onMoveGroupItemToGroup:controller.moveGroupItemToAnotherGroup,            
           );
         },
       ),
@@ -171,6 +178,8 @@ class _AppFlowyBoardContent extends StatefulWidget {
   const _AppFlowyBoardContent({
     required this.config,
     required this.onReorder,
+    required this.onMoveGroupItem,
+    required this.onMoveGroupItemToGroup,
     required this.delegate,
     required this.dataController,
     required this.scrollManager,
@@ -191,6 +200,8 @@ class _AppFlowyBoardContent extends StatefulWidget {
 
   final AppFlowyBoardConfig config;
   final OnReorder onReorder;
+  final OnMoveGroupItem?  onMoveGroupItem;
+  final OnMoveGroupItemToGroup? onMoveGroupItemToGroup;
   final OverlapDragTargetDelegate delegate;
   final AppFlowyBoardController dataController;
   final AppFlowyBoardScrollController? scrollManager;
@@ -205,6 +216,7 @@ class _AppFlowyBoardContent extends StatefulWidget {
   final AppFlowyBoardHeaderBuilder? headerBuilder;
   final AppFlowyBoardFooterBuilder? footerBuilder;
   final ReorderFlexConfig reorderFlexConfig;
+  
 
   @override
   State<_AppFlowyBoardContent> createState() => _AppFlowyBoardContentState();
@@ -234,6 +246,7 @@ class _AppFlowyBoardContentState extends State<_AppFlowyBoardContent> {
             config: widget.reorderFlexConfig,
             scrollController: widget.scrollController,
             onReorder: widget.onReorder,
+
             dataSource: widget.dataController,
             interceptor: OverlappingDragTargetInterceptor(
               reorderFlexId: widget.dataController.identifier,
@@ -242,7 +255,7 @@ class _AppFlowyBoardContentState extends State<_AppFlowyBoardContent> {
               columnsState: widget.boardState,
             ),
             leading: widget.leading,
-            trailing: widget.trailing,
+            trailing: widget.trailing,            
             groupWidth: widget.groupConstraints.maxWidth,
             children: _buildColumns(),
           ),
@@ -271,7 +284,7 @@ class _AppFlowyBoardContentState extends State<_AppFlowyBoardContent> {
 
       final reorderFlexAction = ReorderFlexActionImpl();
       widget.boardState.reorderFlexActionMap[columnData.id] = reorderFlexAction;
-
+      
       children.add(
         ChangeNotifierProvider.value(
           key: ValueKey(columnData.id),
@@ -288,6 +301,9 @@ class _AppFlowyBoardContentState extends State<_AppFlowyBoardContent> {
                   headerBuilder: _buildHeader,
                   footerBuilder: widget.footerBuilder,
                   cardBuilder: widget.cardBuilder,
+                  dataController:widget.dataController,
+                  onMoveGroupItem: widget.dataController.moveGroupItem,
+                  onMoveGroupItemToGroup: widget.dataController.moveGroupItemToAnotherGroup,
                   dataSource: dataSource,
                   scrollController: ScrollController(),
                   phantomController: widget.phantomController,

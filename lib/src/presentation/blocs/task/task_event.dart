@@ -45,3 +45,23 @@ class ResetControllersEvent extends TaskBlocEvent {
   List<Object> get props => [];
 }
 
+class MoveGroupItemEvent extends TaskBlocEvent {
+  final String groupId;
+  final int fromIndex;
+  final int toIndex;
+
+  const MoveGroupItemEvent(this.groupId, this.fromIndex, this.toIndex);
+  @override
+  List<Object> get props => [groupId,fromIndex,toIndex];
+}
+
+class MoveGroupItemToGroupEvent extends TaskBlocEvent {
+  final String fromGroupId;
+  final int fromIndex;
+  final String toGroupId;
+  final int toIndex;
+
+  const MoveGroupItemToGroupEvent(this.fromGroupId, this.fromIndex, this.toGroupId, this.toIndex);
+  @override
+  List<Object> get props => [fromGroupId,fromIndex,toGroupId,toIndex];
+}

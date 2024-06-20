@@ -1,9 +1,5 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
-
 import 'package:equatable/equatable.dart';
-
 import '../../utils/log.dart';
 import '../reorder_flex/reorder_flex.dart';
 
@@ -15,7 +11,7 @@ typedef IsDraggable = bool;
 abstract class AppFlowyGroupItem extends ReoderFlexItem {
   bool get isPhantom => false;
   @override
-  String toString() => id;
+  String toString() => id;    
 }
 
 /// [AppFlowyGroupController] is used to handle the [AppFlowyGroupData].
@@ -192,7 +188,7 @@ class AppFlowyGroupController extends ChangeNotifier with EquatableMixin {
 /// [AppFlowyGroupData] represents the data of each group of the Board.
 class AppFlowyGroupData<CustomData> extends ReoderFlexItem with EquatableMixin {
   AppFlowyGroupData({
-    required this.id,
+    required this.id,    
     required String name,
     this.customData,
     List<AppFlowyGroupItem>? items,
@@ -203,7 +199,7 @@ class AppFlowyGroupData<CustomData> extends ReoderFlexItem with EquatableMixin {
         );
 
   @override
-  final String id;
+  final String id;  
   AppFlowyGroupHeaderData headerData;
   final CustomData? customData;
 
@@ -219,6 +215,7 @@ class AppFlowyGroupData<CustomData> extends ReoderFlexItem with EquatableMixin {
 
   @override
   String toString() => 'Group:[$id]';
+
 }
 
 class AppFlowyGroupHeaderData {

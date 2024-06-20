@@ -25,8 +25,7 @@ abstract class ReoderFlexDataSource {
 /// Each item displayed in the [ReorderFlex] required to implement the [ReoderFlexItem].
 abstract class ReoderFlexItem {
   /// [id] is used to identify the item. It must be unique.
-  String get id;
-
+  String get id;  
   bool draggable = true;
 }
 

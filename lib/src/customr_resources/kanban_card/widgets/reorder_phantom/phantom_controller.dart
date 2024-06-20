@@ -280,7 +280,7 @@ class PhantomGroupItem extends AppFlowyGroupItem {
   bool get isPhantom => true;
 
   @override
-  String get id => phantomContext.itemData.id;
+  String get id => phantomContext.itemData.id;  
 
   Size? get feedbackSize => phantomContext.feedbackSize;
 

@@ -54,7 +54,7 @@ class AppFlowyBoardController extends ChangeNotifier
   });
 
   final List<AppFlowyGroupData> _groupDatas = [];
-
+    
   /// [onMoveGroup] will get called when moving the group from one position to
   /// another.
   final OnMoveGroup? onMoveGroup;
@@ -65,6 +65,7 @@ class AppFlowyBoardController extends ChangeNotifier
   /// [onMoveGroupItemToGroup] will get called when moving the group's item from
   /// one group to another group.
   final OnMoveGroupItemToGroup? onMoveGroupItemToGroup;
+  
 
   /// Returns the unmodifiable list of [AppFlowyGroupData]
   UnmodifiableListView<AppFlowyGroupData> get groupDatas =>
@@ -193,7 +194,9 @@ class AppFlowyBoardController extends ChangeNotifier
   /// If the group with id [groupId] is not exist, this method will do nothing.
   void moveGroupItem(String groupId, int fromIndex, int toIndex) {
     if (getGroupController(groupId)?.move(fromIndex, toIndex) ?? false) {
-      onMoveGroupItem?.call(groupId, fromIndex, toIndex);
+       onMoveGroupItem?.call(groupId, fromIndex, toIndex);
+        notifyListeners();
+      
     }
   }
 
@@ -236,7 +239,6 @@ class AppFlowyBoardController extends ChangeNotifier
   /// Moves the item at [fromGroupIndex] in group with id [fromGroupId] to
   /// group with id [toGroupId] at [toGroupIndex]
   @override
-  @protected
   void moveGroupItemToAnotherGroup(
     String fromGroupId,
     int fromGroupIndex,
@@ -249,7 +251,12 @@ class AppFlowyBoardController extends ChangeNotifier
     if (fromGroupItem == null) return;
 
     if (toGroupController.items.length > toGroupIndex) {
+      try {
+        
       assert(toGroupController.items[toGroupIndex] is PhantomGroupItem);
+      } catch (e) {
+        print(e.toString());
+      }
 
       toGroupController.replace(toGroupIndex, fromGroupItem);
       onMoveGroupItemToGroup?.call(
@@ -258,6 +265,7 @@ class AppFlowyBoardController extends ChangeNotifier
         toGroupId,
         toGroupIndex,
       );
+      notifyListeners();
     }
   }
 

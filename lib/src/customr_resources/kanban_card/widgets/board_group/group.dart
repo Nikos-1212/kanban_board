@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_tracker/src/customr_resources/kanban_card/widgets/board_data.dart';
 import '../../rendering/board_overlay.dart';
 import '../../utils/log.dart';
 import '../reorder_flex/drag_state.dart';
@@ -66,6 +67,8 @@ class AppFlowyBoardGroup extends StatefulWidget {
     required this.dataSource,
     required this.phantomController,
     required this.groupWidth,
+    required this.onMoveGroupItem,
+    required this.onMoveGroupItemToGroup,
     this.headerBuilder,
     this.footerBuilder,
     this.reorderFlexAction,
@@ -78,9 +81,12 @@ class AppFlowyBoardGroup extends StatefulWidget {
     this.bodyPadding = EdgeInsets.zero,
     this.cornerRadius = 0.0,
     this.backgroundColor = Colors.transparent,
-    this.stretchGroupHeight = true,
+    this.stretchGroupHeight = true, required  this.dataController,
   }) : config = const ReorderFlexConfig();
 
+  final OnMoveGroupItem?  onMoveGroupItem;
+  final OnMoveGroupItemToGroup? onMoveGroupItemToGroup;
+  final AppFlowyBoardController dataController;
   final AppFlowyBoardCardBuilder cardBuilder;
   final OnGroupReorder onReorder;
   final AppFlowyGroupDataDataSource dataSource;
