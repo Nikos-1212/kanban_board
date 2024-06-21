@@ -51,6 +51,7 @@ class TaskBloc extends HydratedBloc<TaskBlocEvent, TaskBlocState> {
     on<ResetControllersEvent>(_resetControllersEvent);
     on<MoveGroupItemEvent>(_moveGroupItemEvent);
     on<MoveGroupItemToGroupEvent>(_moveGroupItemToGroupEvent);
+    on<DeleteItemFromGroupListEvent>(_deleteItemFromGroupListEvent);
     _init();
   }
 Stream<bool> get validFormStream => _validFormSubject.stream;  
@@ -130,10 +131,10 @@ FutureOr<void> addnewTaskEvent(AddnewTaskEvent event, Emitter<TaskBlocState> emi
 
     // Update the task model and emit the new state
     final updatedModel = _updateTaskModel(cs.taskModel, groupItems, event.groupIndex.toString());
-    emit(TaskBlocInitial(updatedModel));
+    emit(TaskBlocInitial(updatedModel.copyWith(totalcards: event.lid)));
 
     // Save to JSON
-    toJson(TaskBlocInitial(updatedModel));
+    toJson(TaskBlocInitial(updatedModel.copyWith(totalcards: event.lid)));
   }
 }
   // FutureOr<void> addnewTaskEvent(AddnewTaskEvent event, Emitter<TaskBlocState> emit) {
@@ -275,7 +276,7 @@ FutureOr<void> _moveGroupItemToGroupEvent(MoveGroupItemToGroupEvent event, Emitt
     final toGroupItems = _getGroupItems(event.toGroupId);
 
     // Update from group
-    final updatedFromGroupModel = _updateTaskModel(cs.taskModel, fromGroupItems, event.fromGroupId);
+    final updatedFromGroupModel = _updateTaskModel(cs.taskModel, fromGroupItems, event.fromGroupId,);
     emit(TaskBlocInitial(updatedFromGroupModel));
 
     // Update to group
@@ -306,4 +307,17 @@ TaskModel _updateTaskModel(TaskModel taskModel, List<DataList> dataList, String 
       throw Exception("Invalid group ID");
   }
 }
+
+  FutureOr<void> _deleteItemFromGroupListEvent(DeleteItemFromGroupListEvent event, Emitter<TaskBlocState> emit) {
+      if (state is TaskBlocInitial) {
+    final cs = state as TaskBlocInitial;
+    controller.removeGroupItem(event.groupId, event.itemId);
+    final groupItems = _getGroupItems(event.groupId);    
+    // Update from group list
+    final updatedFromGroupModel = _updateTaskModel(cs.taskModel, groupItems, event.groupId,);
+    emit(TaskBlocInitial(updatedFromGroupModel));
+    // Save to JSON
+    toJson(TaskBlocInitial(updatedFromGroupModel));
+  }
+  }
 }

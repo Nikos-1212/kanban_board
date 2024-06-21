@@ -149,6 +149,7 @@ class DataList extends AppFlowyGroupItem {
         "total_days": totalDays,
     };
     
+    
       @override
       String get id => s??'';
 

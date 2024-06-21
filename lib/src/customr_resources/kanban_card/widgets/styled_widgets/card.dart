@@ -5,10 +5,7 @@ class AppFlowyGroupCard extends StatelessWidget {
     super.key,
     this.child,
     this.margin = const EdgeInsets.all(4),
-    this.decoration = const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.zero,
-    ),
+    this.decoration = const BoxDecoration(),
     this.boxConstraints = const BoxConstraints(minHeight: 40),
     this.onTap
   });

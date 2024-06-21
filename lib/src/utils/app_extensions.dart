@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:readmore/readmore.dart';
+import 'package:task_tracker/src/utils/colors.dart';
 import 'package:task_tracker/src/utils/utils.dart';
 
 extension IntExtension on int?
@@ -17,6 +19,37 @@ extension HexColor on Color {
     if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
     buffer.write(hexString.replaceFirst('#', ''));
     return Color(int.parse(buffer.toString(), radix: 16));
+  }
+}
+extension TitleText on Text {
+  Text text13W500() {
+    return Text(
+      data ?? '',
+      style: const TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 13,
+      ),
+    );
+  }
+}
+
+extension DescriptionText on String {
+  Widget readMoreTextDefault({
+    int trimLines = 2,
+    Color colorClickableText = AppColors.accentDarkerColour,
+    String trimCollapsedText = 'Show more',
+    String trimExpandedText = ' Show less',
+    TextStyle? moreStyle = const TextStyle(fontSize: 10, fontWeight: FontWeight.w400),
+  }) {
+    return ReadMoreText(
+      this,
+      trimMode: TrimMode.Line,
+      trimLines: trimLines,
+      colorClickableText: colorClickableText,
+      trimCollapsedText: trimCollapsedText,
+      trimExpandedText: trimExpandedText,
+      moreStyle: moreStyle,
+    );
   }
 }
 extension StringMultiplication on String {

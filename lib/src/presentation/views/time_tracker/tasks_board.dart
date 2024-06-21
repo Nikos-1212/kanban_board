@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,40 +28,55 @@ class TaskBoard extends StatelessWidget {
   }
 
   Widget _body(BuildContext context) {
+    return 
+     BlocSelector<AppBloc, AppState, bool>(
+       selector: (state) {
+        if (state is AppInitial) {
+          return state.appModel.isLightTheme;
+        }
+        return true; // default value in case state is not AppInitial
+        // final res = context.read<AppBloc>().state as AppInitial;
+      },
+      builder: (bc, isLightTheme) {
+    
     return AppFlowyBoard(
         controller: context.read<TaskBloc>().controller,
-        cardBuilder: (context, group, groupItem) {
+        cardBuilder: (c, group, groupItem,index) {          
           return AppFlowyGroupCard(
             key: ValueKey(groupItem.id),
             onTap: () {
             
             },
-            child: _buildCard(groupItem),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6.5),              
+              color: isLightTheme?Colors.white:AppColors.primaryColour.withOpacity(0.5)
+            ),
+            child: _buildCard(groupItem,group,index,context),
           );
         },
         boardScrollController: context.read<TaskBloc>().boardController,
         footerBuilder: (context, columnData) {
-          return AppFlowyGroupFooter(
+          return const AppFlowyGroupFooter(
             // icon: const Icon(Icons.add, size: 20),
             // title: const Text('New'),
-            height: 50,
-            margin: AppFlowyBoardConfig(
-              groupBackgroundColor: HexColor.fromHex('#F7F8FC'),
-              stretchGroupHeight: false,
-            ).groupBodyPadding,
-            onAddButtonClick: () {
-              context
-                  .read<TaskBloc>()
-                  .boardController
-                  .scrollToBottom(columnData.id);
-            },
+            height: 12,
+            // margin: AppFlowyBoardConfig(
+            //   groupBackgroundColor: HexColor.fromHex('#F7F8FC'),
+            //   stretchGroupHeight: false,
+            // ).groupBodyPadding,
+            // onAddButtonClick: () {
+            //   context
+            //       .read<TaskBloc>()
+            //       .boardController
+            //       .scrollToBottom(columnData.id);
+            // },
           );
         },
         headerBuilder: (context, columnData) {
           return AppFlowyGroupHeader(
             icon: const Icon(Icons.lightbulb_circle),
             onAddButtonClick: () {
-              context.read<TaskBloc>().add(ResetControllersEvent());
+              // context.read<TaskBloc>().add(ResetControllersEvent());
               if (columnData.id == '1') {
                 _addNewTaskDialog(context, 1);
               } else if (columnData.id == '2') {
@@ -108,20 +124,27 @@ class TaskBoard extends StatelessWidget {
         }, onMoveGroupItemToGroup: (String fromGroupId, int fromIndex, String toGroupId, int toIndex) { 
           debugPrint('Move $fromGroupId:$fromIndex to $toGroupId:$toIndex');
          },);
+      });
   }
 
-  Widget _buildCard(AppFlowyGroupItem item) {
+  Widget _buildCard(AppFlowyGroupItem item,AppFlowyGroupData<dynamic> group,int index,BuildContext context) {
     if (item is DataList) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.titile),
-                  Text(item.description,style:const TextStyle(fontSize: 11),),
+                     Row(                
+                      crossAxisAlignment: CrossAxisAlignment.start,                       
+                       children: [
+                         Expanded(child: Text(item.titile).text13W500()),
+                         _menu(item,group,index,context)
+                       ],
+                     ),
+                     item.description.readMoreTextDefault(),
                 ],
               ),
             ),
@@ -144,7 +167,6 @@ class TaskBoard extends StatelessWidget {
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width,
       ),
-      // backgroundColor: AppColor.labelBgColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -413,28 +435,20 @@ class TaskBoard extends StatelessWidget {
           child: StreamBuilder<bool>(
               stream: context.read<TaskBloc>().validFormStream,
               initialData: false,
-              builder: (context, snapshot) {
-                final res = context.read<AppBloc>().state as AppInitial;
+              builder: (context, snapshot) {                
                 return GradientPrimaryButton(
                   enableFeedback: snapshot.data,
                   text: AppConst.pSubmit,
                   onPressed: () {
                     final state = context.read<TaskBloc>().state;
                     if (state is TaskBlocInitial) {
+                     final length= state.taskModel.totalcards+1; 
                       final tsk = DataList(
-                          s: context
-                              .read<TaskBloc>()
-                              .controller
-                              .getGroupController('$index')
-                              ?.groupData
-                              .items
-                              .length
-                              .toString(),
+                          s:length.toString(),
                           cat: '$index',
                           titile: state.taskModel.title ?? '', //textfield
                           createdDate: DateTime.now().millisecondsSinceEpoch,
-                          description:
-                              state.taskModel.description ?? '', //textfield
+                          description:state.taskModel.description ?? '', //textfield
                           images: [],
                           comments: [
                             Comment.fromMap({
@@ -449,7 +463,7 @@ class TaskBoard extends StatelessWidget {
                                   Duration(days: state.taskModel.numOfDay ?? 0))
                               .millisecondsSinceEpoch,
                           totalDays: state.taskModel.numOfDay ?? 0);
-                      context.read<TaskBloc>().add(AddnewTaskEvent(tsk, index));
+                      context.read<TaskBloc>().add(AddnewTaskEvent(tsk, index,length));
                       Navigator.pop(context);
                     }
                   },
@@ -457,11 +471,81 @@ class TaskBoard extends StatelessWidget {
                   buttonColor: snapshot.data!
                       ? ManageTheme.lightTheme.primaryColor
                       : ManageTheme.lightTheme.primaryColor.withOpacity(0.6),
-                );
+                );//// final res = context.read<AppBloc>().state as AppInitial;
               }),
         ),
       ],
     );
   }
+
+
+Widget _menu(DataList item,AppFlowyGroupData<dynamic> group,int index,BuildContext context) {
+  return SizedBox(
+    height: 20,
+    width: 28,
+    child: PopupMenuButton<String>(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      color: const Color(0XFF353640),
+      elevation: 4.0,
+      tooltip: 'View options',
+      icon: const Icon(CupertinoIcons.ellipsis,size: 18,),
+      onSelected: (String value) async {
+        if(value =='1')
+        {
+          // item
+        }
+        else if(value =='2')
+        {
+          //remove item
+          print('$index------>${group.id}');
+          try {
+            
+          context.read<TaskBloc>().add(DeleteItemFromGroupListEvent(group.id, index,item.id));
+          } catch (e) {
+            print(e.toString());
+          }
+          
+        }
+      },
+      position: PopupMenuPosition.under,
+      itemBuilder: (BuildContext context) => _menuItems(),
+    ),
+  );
+}
+
+List<PopupMenuEntry<String>> _menuItems() {
+  return [
+    _buildMenuItem('1', CupertinoIcons.info, 'View details'),
+    _buildMenuItem('2', CupertinoIcons.delete_simple, 'Remove'),
+  ];
+}
+
+PopupMenuItem<String> _buildMenuItem(String value, IconData icon, String text) {
+  return PopupMenuItem<String>(
+    height: 25,
+    value: value,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          color: Colors.white,
+          size: 18,
+        ),
+        const SizedBox(width: 5),
+        Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 }
 //__________________________end

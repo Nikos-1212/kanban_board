@@ -23,6 +23,7 @@ typedef AppFlowyBoardCardBuilder = Widget Function(
   BuildContext context,
   AppFlowyGroupData groupData,
   AppFlowyGroupItem item,
+  int index
 );
 
 typedef AppFlowyBoardHeaderBuilder = Widget? Function(
@@ -125,10 +126,21 @@ class _AppFlowyBoardGroupState extends State<AppFlowyBoardGroup> {
     super.initState();
 
     _overlayEntry = BoardOverlayEntry(
-      builder: (BuildContext context) {
-        final children = widget.dataSource.groupData.items
-            .map((item) => _buildWidget(context, item))
-            .toList();
+      builder: (BuildContext context) {        
+        // final children = widget.dataSource.groupData.items
+        //     .map((item) => _buildWidget(context, item))
+        //     .toList();
+            final children = List.generate(
+  widget.dataSource.groupData.items.length,
+  (index) => _buildWidget(context, widget.dataSource.groupData.items[index], index),
+);
+// final children = widget.dataSource.groupData.items
+//     .asMap()
+//     .entries
+//     .map((entry) => _buildWidget(context, entry.value, entry.key))
+//     .toList();
+
+
 
         final header =
             widget.headerBuilder?.call(context, widget.dataSource.groupData);
@@ -177,6 +189,7 @@ class _AppFlowyBoardGroupState extends State<AppFlowyBoardGroup> {
           ),
         );
 
+ 
         return Container(
           margin: widget.margin,
           clipBehavior: Clip.hardEdge,
@@ -204,7 +217,7 @@ class _AppFlowyBoardGroupState extends State<AppFlowyBoardGroup> {
         initialEntries: [_overlayEntry],
       );
 
-  Widget _buildWidget(BuildContext context, AppFlowyGroupItem item) {
+  Widget _buildWidget(BuildContext context, AppFlowyGroupItem item,int index) {
     if (item is PhantomGroupItem) {
       return PassthroughPhantomWidget(
         key: UniqueKey(),
@@ -213,6 +226,8 @@ class _AppFlowyBoardGroupState extends State<AppFlowyBoardGroup> {
       );
     }
 
-    return widget.cardBuilder(context, widget.dataSource.groupData, item);
+    return widget.cardBuilder(context, widget.dataSource.groupData, item,index);
   }
+
+
 }

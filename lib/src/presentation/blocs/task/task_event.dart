@@ -8,11 +8,12 @@ sealed class TaskBlocEvent extends Equatable {
 }
 
 class AddnewTaskEvent extends TaskBlocEvent {
-  const AddnewTaskEvent(this.addNewTask,this.groupIndex);
+  const AddnewTaskEvent(this.addNewTask,this.groupIndex,this.lid);
   final DataList addNewTask;
   final int groupIndex;
+  final int lid;
   @override
-  List<Object> get props => [addNewTask,groupIndex];
+  List<Object> get props => [addNewTask,groupIndex,lid];
 }
 
 class TitleEvent extends TaskBlocEvent {
@@ -64,4 +65,15 @@ class MoveGroupItemToGroupEvent extends TaskBlocEvent {
   const MoveGroupItemToGroupEvent(this.fromGroupId, this.fromIndex, this.toGroupId, this.toIndex);
   @override
   List<Object> get props => [fromGroupId,fromIndex,toGroupId,toIndex];
+}
+
+class DeleteItemFromGroupListEvent extends TaskBlocEvent {
+  
+  final String groupId;
+  final int index;
+  final String itemId;
+
+  const DeleteItemFromGroupListEvent(this.groupId, this.index,this.itemId);
+  @override
+  List<Object> get props => [groupId,index,itemId];
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:provider/provider.dart';
+import 'package:task_tracker/src/presentation/blocs/app/app_bloc.dart';
+import 'package:task_tracker/src/utils/colors.dart';
 import '../rendering/board_overlay.dart';
 import '../utils/log.dart';
 
@@ -285,6 +288,7 @@ class _AppFlowyBoardContentState extends State<_AppFlowyBoardContent> {
       final reorderFlexAction = ReorderFlexActionImpl();
       widget.boardState.reorderFlexActionMap[columnData.id] = reorderFlexAction;
       
+      
       children.add(
         ChangeNotifierProvider.value(
           key: ValueKey(columnData.id),
@@ -295,7 +299,18 @@ class _AppFlowyBoardContentState extends State<_AppFlowyBoardContent> {
               child: LayoutBuilder(
                 // use LayoutBuilder to get the width of the group
                 // and pass it to be used in [ReorderDragTarget]
-                builder: (context, constraints) => AppFlowyBoardGroup(
+                builder: (context, constraints) =>
+
+                 BlocSelector<AppBloc, AppState, bool>(
+       selector: (state) {
+        if (state is AppInitial) {
+          return state.appModel.isLightTheme;
+        }
+        return true; // default value in case state is not AppInitial
+        // final res = context.read<AppBloc>().state as AppInitial;
+      },
+      builder: (context, isLightTheme) {
+        return AppFlowyBoardGroup(
                   margin: _marginFromIndex(columnIndex),
                   bodyPadding: widget.config.groupBodyPadding,
                   headerBuilder: _buildHeader,
@@ -309,13 +324,15 @@ class _AppFlowyBoardContentState extends State<_AppFlowyBoardContent> {
                   phantomController: widget.phantomController,
                   onReorder: widget.dataController.moveGroupItem,
                   cornerRadius: widget.config.groupCornerRadius,
-                  backgroundColor: widget.config.groupBackgroundColor,
+                  backgroundColor:isLightTheme? widget.config.groupBackgroundColor:AppColors.accentColour,
                   dragStateStorage: widget.boardState,
                   dragTargetKeys: widget.boardState,
                   reorderFlexAction: reorderFlexAction,
                   stretchGroupHeight: widget.config.stretchGroupHeight,
                   groupWidth: constraints.maxWidth,
-                ),
+                );
+      })
+                 
               ),
             ),
           ),
