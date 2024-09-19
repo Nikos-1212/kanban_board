@@ -508,7 +508,7 @@ Widget _menu(DataList item,AppFlowyGroupData<dynamic> group,int index,BuildConte
           }
           
         }
-      },
+      },  
       position: PopupMenuPosition.under,
       itemBuilder: (BuildContext context) => _menuItems(),
     ),

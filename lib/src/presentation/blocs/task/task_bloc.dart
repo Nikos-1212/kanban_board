@@ -315,8 +315,7 @@ TaskModel _updateTaskModel(TaskModel taskModel, List<DataList> dataList, String 
     final groupItems = _getGroupItems(event.groupId);    
     // Update from group list
     final updatedFromGroupModel = _updateTaskModel(cs.taskModel, groupItems, event.groupId,);
-    emit(TaskBlocInitial(updatedFromGroupModel));
-    // Save to JSON
+    emit(TaskBlocInitial(updatedFromGroupModel));    
     toJson(TaskBlocInitial(updatedFromGroupModel));
   }
   }
